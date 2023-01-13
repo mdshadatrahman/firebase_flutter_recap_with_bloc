@@ -2,30 +2,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/custom_colored_log.dart';
-import 'package:mynotes/views/login_view.dart';
-import 'firebase_options.dart';
+import 'package:mynotes/firebase_options.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const LoginView(),
-    ),
-  );
-}
-
-class RegisterView extends StatefulWidget {
-  const RegisterView({super.key});
+class LoginView extends StatefulWidget {
+  const LoginView({super.key});
 
   @override
-  State<RegisterView> createState() => _RegisterViewState();
+  State<LoginView> createState() => _LoginViewState();
 }
 
-class _RegisterViewState extends State<RegisterView> {
+class _LoginViewState extends State<LoginView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
   @override
@@ -46,7 +32,7 @@ class _RegisterViewState extends State<RegisterView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
+        title: const Text('Login'),
       ),
       body: FutureBuilder(
         future: Firebase.initializeApp(
@@ -67,35 +53,31 @@ class _RegisterViewState extends State<RegisterView> {
                   TextField(
                     controller: _password,
                     obscureText: true,
-                    enableSuggestions: false,
                     autocorrect: false,
+                    enableSuggestions: false,
                     decoration: const InputDecoration(
                       hintText: 'Password',
                     ),
                   ),
                   TextButton(
                     onPressed: () async {
+                      final email = _email.text;
+                      final password = _password.text;
                       try {
-                        final email = _email.text;
-                        final password = _password.text;
-                        final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                        final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
                           email: email,
                           password: password,
                         );
                         CustomColoredLogs.logInfo(userCredential);
                       } on FirebaseAuthException catch (e) {
-                        if (e.code == 'invalid-email') {
-                          CustomColoredLogs.logWarning('Inivalid Email');
-                        } else if (e.code == 'weak-password') {
-                          CustomColoredLogs.logWarning('Weak password');
-                        } else if (e.code == 'email-already-in-use') {
-                          CustomColoredLogs.logWarning('User alreaady exists');
-                        } else {
-                          CustomColoredLogs.logWarning(e.code);
+                        if (e.code == 'user-not-found') {
+                          CustomColoredLogs.logWarning('User not found');
+                        } else if (e.code == 'wrong-password') {
+                          CustomColoredLogs.logWarning('Wrong password');
                         }
                       }
                     },
-                    child: const Text('Register'),
+                    child: const Text('Login'),
                   ),
                 ],
               );
