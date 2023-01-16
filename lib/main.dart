@@ -15,6 +15,10 @@ void main() {
         primarySwatch: Colors.blue,
       ),
       home: const HomePage(),
+      routes: {
+        '/login/': (context) => const LoginView(),
+        '/register/': (context) => const RegisterView(),
+      },
     ),
   );
 }
@@ -29,50 +33,26 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
+    return FutureBuilder(
+      future: Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
       ),
-      body: FutureBuilder(
-        future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        ),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.done:
-              final user = FirebaseAuth.instance.currentUser;
-              if (user?.emailVerified ?? false) {
-                CustomColoredLogs.logSuccess('Verified');
-                return const Text('Done');
-              } else {
-                CustomColoredLogs.logWarning('Not Verified');
-                return const VerifyEmailView();
-              }
-            default:
-              return const Text('Loading...');
-          }
-        },
-      ),
-    );
-  }
-}
-
-class VerifyEmailView extends StatelessWidget {
-  const VerifyEmailView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Text('Please verify your email.'),
-        TextButton(
-          onPressed: () {
-            final user = FirebaseAuth.instance.currentUser;
-            user?.sendEmailVerification();
-          },
-          child: const Text('Send Verification Email'),
-        ),
-      ],
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.done:
+            // final user = FirebaseAuth.instance.currentUser;
+            // if (user?.emailVerified ?? false) {
+            //   CustomColoredLogs.logSuccess('Verified');
+            //   return const Text('Done');
+            // } else {
+            //   CustomColoredLogs.logWarning('Not Verified');
+            //   return const VerifyEmailView();
+            // }
+            return const LoginView();
+          default:
+            return const CircularProgressIndicator();
+        }
+      },
     );
   }
 }
