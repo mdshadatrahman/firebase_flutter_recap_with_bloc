@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mynotes/custom_colored_log.dart';
 import 'package:mynotes/firebase_options.dart';
 import 'package:mynotes/views/login_view.dart';
+import 'package:mynotes/views/register_view.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,15 +43,36 @@ class _HomePageState extends State<HomePage> {
               final user = FirebaseAuth.instance.currentUser;
               if (user?.emailVerified ?? false) {
                 CustomColoredLogs.logSuccess('Verified');
+                return const Text('Done');
               } else {
-                CustomColoredLogs.logInfo('You need to verify your email.');
+                CustomColoredLogs.logWarning('Not Verified');
+                return const VerifyEmailView();
               }
-              return const Text('Done');
             default:
               return const Text('Loading...');
           }
         },
       ),
+    );
+  }
+}
+
+class VerifyEmailView extends StatelessWidget {
+  const VerifyEmailView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Text('Please verify your email.'),
+        TextButton(
+          onPressed: () {
+            final user = FirebaseAuth.instance.currentUser;
+            user?.sendEmailVerification();
+          },
+          child: const Text('Send Verification Email'),
+        ),
+      ],
     );
   }
 }
