@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
-import 'package:mynotes/custom_colored_log.dart';
 import 'package:mynotes/firebase_options.dart';
 import 'package:mynotes/views/login_view.dart';
 import 'package:mynotes/views/register_view.dart';
@@ -47,14 +46,11 @@ class _HomePageState extends State<HomePage> {
             final user = FirebaseAuth.instance.currentUser;
             if (user != null) {
               if (user.emailVerified) {
-                CustomColoredLogs.logSuccess('Email Verified');
                 return const NotesView();
               } else {
-                CustomColoredLogs.logSuccess('Email is not verified');
                 return const VerifyEmailView();
               }
             } else {
-              CustomColoredLogs.logSuccess('User is null');
               return const LoginView();
             }
           default:

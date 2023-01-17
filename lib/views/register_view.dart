@@ -62,6 +62,8 @@ class _RegisterViewState extends State<RegisterView> {
                   password: password,
                 )
                     .then((value) {
+                  final user = FirebaseAuth.instance.currentUser;
+                  user?.sendEmailVerification();
                   Navigator.of(context).pushNamed(verifyEmailRoute);
                 });
               } on FirebaseAuthException catch (e) {
