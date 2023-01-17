@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
-import 'package:mynotes/custom_colored_log.dart';
+import 'package:mynotes/utilities/show_error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -56,21 +56,26 @@ class _RegisterViewState extends State<RegisterView> {
               try {
                 final email = _email.text;
                 final password = _password.text;
-                final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                await FirebaseAuth.instance
+                    .createUserWithEmailAndPassword(
                   email: email,
                   password: password,
-                );
-                CustomColoredLogs.logInfo(userCredential);
+                )
+                    .then((value) {
+                  Navigator.of(context).pushNamed(verifyEmailRoute);
+                });
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'invalid-email') {
-                  CustomColoredLogs.logWarning('Inivalid Email');
+                  await showErrorDialog(context, 'Invalid email');
                 } else if (e.code == 'weak-password') {
-                  CustomColoredLogs.logWarning('Weak password');
+                  await showErrorDialog(context, 'Weak password');
                 } else if (e.code == 'email-already-in-use') {
-                  CustomColoredLogs.logWarning('User alreaady exists');
+                  await showErrorDialog(context, 'Email exists');
                 } else {
-                  CustomColoredLogs.logWarning(e.code);
+                  await showErrorDialog(context, 'Error: ${e.code}');
                 }
+              } catch (e) {
+                await showErrorDialog(context, e.toString());
               }
             },
             child: const Text('Register'),
