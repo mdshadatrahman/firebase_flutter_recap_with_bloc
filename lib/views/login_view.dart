@@ -55,11 +55,22 @@ class _LoginViewState extends State<LoginView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                await FirebaseAuth.instance
+                    .signInWithEmailAndPassword(
                   email: email,
                   password: password,
+                )
+                    .then(
+                  (value) {
+                    CustomColoredLogs.logSuccess(value);
+
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/notes/',
+                      (route) => false,
+                    );
+                  },
                 );
-                CustomColoredLogs.logInfo(userCredential);
+                CustomColoredLogs.logSuccess('Logged in');
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'user-not-found') {
                   CustomColoredLogs.logWarning('User not found');

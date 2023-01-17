@@ -19,6 +19,7 @@ void main() {
       routes: {
         '/login/': (context) => const LoginView(),
         '/register/': (context) => const RegisterView(),
+        '/notes/': (context) => const NotesView(),
       },
     ),
   );
@@ -79,11 +80,12 @@ class NotesView extends StatelessWidget {
                 case MenuAction.logout:
                   final shouldLogOut = await showLogOutDialog(context);
                   if (shouldLogOut) {
-                    await FirebaseAuth.instance.signOut();
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/login/',
-                      (route) => false,
-                    );
+                    await FirebaseAuth.instance.signOut().then((value) {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        '/login/',
+                        (route) => false,
+                      );
+                    });
                   }
               }
             },
